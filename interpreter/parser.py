@@ -19,7 +19,8 @@ from interpreter.grammar import (
     Call,
     ClassDeclarationStatement,
     Get,
-    Set
+    Set,
+    This
 )
 import sys
 
@@ -225,6 +226,9 @@ class Parser:
 
         if self.match(TokenType.IDENTIFIER):
             return Variable(self.previous())
+
+        if self.match(TokenType.THIS):
+            return This(self.previous())
 
         if self.match(TokenType.LEFT_PAREN):
             expression = self.expression()

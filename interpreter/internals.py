@@ -44,6 +44,7 @@ class TokenType:
     FOR = "FOR"
     FUNCTION = "FUN"
     RETURN = "RETURN"
+    THIS = "THIS"
 
     # End of file
     EOF = "EOF"

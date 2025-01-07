@@ -310,6 +310,19 @@ class Set(Expression):
         resolver.resolve(self.object)
 
 
+class This(Expression):
+    keyword: Token = None
+
+    def __init__(self, keyword: Token) -> None:
+        self.keyword = keyword
+
+    def eval(self):
+        return lookup_variable(self.keyword, self)
+
+    def run_resolver(self, resolver):
+        resolver.resolve_local(self, self.keyword)
+
+
 """
 program        → declaration* EOF ;
 
@@ -494,6 +507,7 @@ class FunctionDeclarationStatement(Statement):
             closure=environment,
         )
         environment.define(self.name, function)
+        return function
 
     def run_resolver(self, resolver):
         resolver.declare(self.name.lexeme)
@@ -549,10 +563,18 @@ class ClassDeclarationStatement(Statement):
         klass = MyClass(name=self.name, methods={})
 
         for method in self.methods:
-            klass.methods[method.name.lexeme] = method
+            klass.methods[method.name.lexeme] = method.eval()
 
         environment.assign(self.name, klass)
 
     def run_resolver(self, resolver):
         resolver.declare(self.name.lexeme)
         resolver.define(self.name.lexeme)
+
+        resolver.begin_scope()
+        resolver.scopes[-1]["this"] = True
+
+        for method in self.methods:
+            method.run_resolver(resolver)
+
+        resolver.end_scope()

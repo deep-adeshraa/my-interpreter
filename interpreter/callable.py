@@ -1,6 +1,6 @@
 import time
 from interpreter.environment import Environment
-from interpreter.internals import Token
+from interpreter.internals import Token, TokenType
 
 
 class MyCallable:
@@ -63,6 +63,25 @@ class MyFunction(MyCallable):
     def arity(self):
         return len(self.parameters)
 
+    def bind(self, instance):
+        new_closure = Environment(outer_environment=self.closure)
+        # it means that replace this with the instance in new environment
+        new_closure.define(
+            Token(
+                token_type=TokenType.THIS,
+                lexeme="this",
+                literal=None,
+                line_number=0,
+            ),
+            instance,
+        )
+        return MyFunction(
+            parameters=self.parameters,
+            body=self.body,
+            name=self.name,
+            closure=new_closure,
+        )
+
     def __str__(self):
         return f"<fn {self.name.lexeme}>"
 
@@ -85,12 +104,14 @@ class MyInstance:
         method = self.klass.methods.get(name.lexeme)
 
         if method:
-            return method
+            return method.bind(self)
+
 
         raise Exception(f"Undefined property '{name.lexeme}'.")
 
     def set(self, name: Token, value):
         self.fields[name.lexeme] = value
+
 
 # native function clock
 class ClockCallable(MyFunction):
