@@ -12,7 +12,10 @@ expression     → literal
                | grouping
                | variable
                | logical
-               | call;
+               | call
+               | get
+               | set
+               | this ;
 
 literal        → NUMBER | STRING | "true" | "false" | "nil" ;
 grouping       → "(" expression ")" ;

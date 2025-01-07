@@ -1,12 +1,11 @@
 class Cake {
-  call() {
-    return Cake();
+  init() {
+    print this;
   }
 
   taste() {
     var adjective = "delicious";
     print "The " + this.flavor + " cake is " + adjective + "!";
-    print this.call();
   }
 }
 

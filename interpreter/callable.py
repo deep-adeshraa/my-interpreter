@@ -24,9 +24,19 @@ class MyClass(MyCallable):
 
     def __call__(self, *args, **kwargs):
         instance = MyInstance(self)
+
+        init_method: MyFunction = self.methods.get("init")
+
+        if init_method:
+            init_method.bind(instance)(*args, **kwargs)
+
         return instance
 
     def arity(self):
+        has_init = self.methods.get("init")
+        if has_init:
+            return has_init.arity()
+
         return 0
 
     def __str__(self):
@@ -58,7 +68,13 @@ class MyFunction(MyCallable):
         try:
             self.body.eval(given_environment=function_environment)
         except ReturnAsException as e:
+            if self.name.lexeme == "init":
+                return self.closure.get(Token(TokenType.THIS, "this", None, 0))
+
             return e.value
+
+        if self.name.lexeme == "init":
+            return self.closure.get(Token(TokenType.THIS, "this", None, 0))
 
     def arity(self):
         return len(self.parameters)
@@ -105,7 +121,6 @@ class MyInstance:
 
         if method:
             return method.bind(self)
-
 
         raise Exception(f"Undefined property '{name.lexeme}'.")
 
