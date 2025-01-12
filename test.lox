@@ -4,6 +4,10 @@ class Doughnut {
   }
 }
 
-class BostonCream extends Doughnut {}
+class BostonCream extends Doughnut {
+  cook() {
+    print "Pipe full of custard and coat with chocolate.";
+  }
+}
 
 BostonCream().cook();
