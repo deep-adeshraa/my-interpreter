@@ -1,13 +1,24 @@
-class Doughnut {
-  cook() {
-    print "Fry until golden brown.";
-  }
+class A {
+    init(a) {
+        this.a = a;
+    }
+
+    printA() {
+        print this.a;
+    }
 }
 
-class BostonCream extends Doughnut {
-  cook() {
-    print "Pipe full of custard and coat with chocolate.";
-  }
+class B extends A {
+    init(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    printB() {
+        print this.b;
+    }
 }
 
-BostonCream().cook();
+var b = B(10, 20);
+b.printA();
+b.printB();
