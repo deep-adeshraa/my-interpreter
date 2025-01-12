@@ -346,7 +346,7 @@ funcDecl       → "fun" function ;
 function       → IDENTIFIER "(" parameters? ")" block ;
 parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 
-classDecl      → "class" IDENTIFIER "{" function* "}" ;
+classDecl      → "class" IDENTIFIER extends IDENTIFIER? "{" function* "}" ;
 
 exprStmt       → expression ";" ;
 printStmt      → "print" expression ";" ;
@@ -556,14 +556,28 @@ class ReturnStatement(Statement):
 class ClassDeclarationStatement(Statement):
     name: Token = None
     methods: list[FunctionDeclarationStatement] = []
+    superclass: Variable = None
 
-    def __init__(self, name: Token, methods: list[FunctionDeclarationStatement]):
+    def __init__(
+        self,
+        name: Token,
+        methods: list[FunctionDeclarationStatement],
+        superclass: Variable = None,
+    ):
         self.name = name
         self.methods = methods
+        self.superclass = superclass
 
     def eval(self):
+        super_class = None
+
+        if self.superclass:
+            super_class = self.superclass.eval()
+            if not isinstance(super_class, MyClass):
+                raise Exception(f"Superclass must be a class.")
+
         environment.define(self.name, None)
-        klass = MyClass(name=self.name, methods={})
+        klass = MyClass(name=self.name, methods={}, super_class=super_class)
 
         for method in self.methods:
             klass.methods[method.name.lexeme] = method.eval()
@@ -573,6 +587,12 @@ class ClassDeclarationStatement(Statement):
     def run_resolver(self, resolver):
         resolver.declare(self.name.lexeme)
         resolver.define(self.name.lexeme)
+
+        if self.superclass:
+            if self.superclass.token.lexeme == self.name.lexeme:
+                raise Exception(f"A class cannot inherit from itself")
+
+            resolver.resolve(self.superclass)
 
         resolver.begin_scope()
         resolver.scopes[-1]["this"] = True

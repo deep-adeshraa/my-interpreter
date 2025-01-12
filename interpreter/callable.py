@@ -17,10 +17,12 @@ class MyCallable:
 class MyClass(MyCallable):
     name: Token = None
     methods: dict[str, MyCallable] = {}
+    super_class = None
 
-    def __init__(self, name, methods):
+    def __init__(self, name, methods, super_class=None):
         self.name = name
         self.methods = methods
+        self.super_class = super_class
 
     def __call__(self, *args, **kwargs):
         instance = MyInstance(self)
@@ -118,6 +120,9 @@ class MyInstance:
             return self.fields[name.lexeme]
 
         method = self.klass.methods.get(name.lexeme)
+
+        if not method and self.klass.super_class:
+            method = self.klass.super_class.methods.get(name.lexeme)
 
         if method:
             return method.bind(self)

@@ -45,6 +45,7 @@ class TokenType:
     FUNCTION = "FUN"
     RETURN = "RETURN"
     THIS = "THIS"
+    EXTENDS = "EXTENDS"
 
     # End of file
     EOF = "EOF"
@@ -130,6 +131,7 @@ class ReservedLexeme:
     VAR = "var"
     WHILE = "while"
     AND_WORD = "and"
+    EXTENDS = "extends"
 
     RESERVED_WORDS = [
         AND_WORD,
@@ -148,6 +150,7 @@ class ReservedLexeme:
         TRUE,
         VAR,
         WHILE,
+        EXTENDS,
     ]
 
     BOOLEAN_LEXEMES = [FALSE, TRUE, NIL]

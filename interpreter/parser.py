@@ -388,6 +388,13 @@ class Parser:
 
     def class_declaration(self):
         name_token = self.consume(TokenType.IDENTIFIER, "Expect class name.")
+        super_class = None
+
+
+        if self.match(TokenType.EXTENDS):
+            super_class = self.consume(TokenType.IDENTIFIER, "Expect superclass name.")
+            super_class = Variable(super_class)
+
         self.consume(TokenType.LEFT_BRACE, "Expect '{' before class body.")
 
         methods = []
@@ -397,4 +404,4 @@ class Parser:
 
         self.consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.")
 
-        return ClassDeclarationStatement(name_token, methods)
+        return ClassDeclarationStatement(name_token, methods, super_class)
